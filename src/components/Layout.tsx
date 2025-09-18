@@ -1,7 +1,9 @@
-import { ReactNode } from "react";
+import { ReactNode, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { AppSidebar } from "./AppSidebar";
 import { 
   Calculator, 
   FileText, 
@@ -10,7 +12,6 @@ import {
   Menu,
   X 
 } from "lucide-react";
-import { useState } from "react";
 
 interface LayoutProps {
   children: ReactNode;
@@ -26,12 +27,46 @@ export default function Layout({ children }: LayoutProps) {
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const isHomePage = location.pathname === "/";
+  // Show sidebar layout for dashboard and related pages
+  const showSidebar = location.pathname.startsWith('/dashboard') || 
+                     location.pathname.startsWith('/quotes') || 
+                     location.pathname.startsWith('/settings') ||
+                     location.pathname.startsWith('/rebates') ||
+                     location.pathname.startsWith('/templates');
 
-  if (isHomePage) {
+  // Render children directly if on home page
+  if (location.pathname === "/") {
     return <>{children}</>;
   }
 
+  // Use sidebar layout for dashboard pages
+  if (showSidebar) {
+    return (
+      <SidebarProvider>
+        <div className="min-h-screen flex w-full">
+          <AppSidebar />
+          <main className="flex-1 bg-gradient-subtle">
+            <header className="h-12 flex items-center border-b bg-background/80 backdrop-blur-sm px-4">
+              <SidebarTrigger />
+              <div className="ml-4 flex items-center gap-3">
+                <div className="flex items-center justify-center w-8 h-8 bg-gradient-construction rounded-lg">
+                  <HardHat className="w-5 h-5 text-construction-foreground" />
+                </div>
+                <div>
+                  <h1 className="font-bold text-foreground">Retrofit.ai</h1>
+                </div>
+              </div>
+            </header>
+            <div>
+              {children}
+            </div>
+          </main>
+        </div>
+      </SidebarProvider>
+    );
+  }
+
+  // Regular layout for other pages
   return (
     <div className="min-h-screen bg-gradient-subtle">
       {/* Header */}

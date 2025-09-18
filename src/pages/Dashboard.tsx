@@ -85,44 +85,40 @@ const getStatusColor = (status: string) => {
 
 export default function Dashboard() {
   return (
-    <div className="min-h-screen bg-gradient-subtle">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
-            <p className="text-muted-foreground">
-              Manage your insulation quotes and track your business
-            </p>
-          </div>
-          <Button asChild variant="construction" size="lg">
-            <Link to="/quote-builder">
-              <Plus className="w-5 h-5" />
-              New Quote
-            </Link>
-          </Button>
+    <div className="p-6">
+      {/* Header with Add New Project Button */}
+      <div className="flex justify-between items-center mb-8">
+        <div>
+          <h1 className="text-2xl font-bold text-foreground">Your Metrics</h1>
         </div>
+        <Button className="bg-muted hover:bg-muted/80 text-foreground border">
+          <Plus className="w-4 h-4 mr-2" />
+          Add New Project
+        </Button>
+      </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-4 gap-6 mb-8">
           {stats.map((stat) => {
             const Icon = stat.icon;
             return (
-              <Card key={stat.label} className="p-6 hover:shadow-card transition-all duration-300">
-                <div className="flex items-center justify-between">
-                  <div className="space-y-2">
+              <Card key={stat.label} className="p-6 bg-white hover:shadow-lg transition-all duration-300">
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
                     <p className="text-sm text-muted-foreground font-medium">
                       {stat.label}
                     </p>
-                    <p className="text-3xl font-bold text-foreground">
+                    <div className={`p-2 rounded-lg ${stat.color === 'text-construction' ? 'bg-construction/10' : stat.color === 'text-success' ? 'bg-success/10' : stat.color === 'text-safety' ? 'bg-safety/10' : 'bg-primary/10'}`}>
+                      <Icon className={`w-5 h-5 ${stat.color}`} />
+                    </div>
+                  </div>
+                  <div>
+                    <p className="text-2xl font-bold text-foreground">
                       {stat.value}
                     </p>
-                    <p className={`text-sm font-semibold ${stat.color}`}>
+                    <p className={`text-sm font-medium ${stat.color}`}>
                       {stat.change} from last month
                     </p>
-                  </div>
-                  <div className={`p-3 rounded-xl bg-gradient-construction/10`}>
-                    <Icon className={`w-6 h-6 ${stat.color}`} />
                   </div>
                 </div>
               </Card>
@@ -130,95 +126,81 @@ export default function Dashboard() {
           })}
         </div>
 
-        {/* Quick Actions */}
-        <div className="grid lg:grid-cols-3 gap-6 mb-8">
-          <Card className="p-6 hover:shadow-card transition-all duration-300">
-            <div className="flex items-center gap-4">
-              <div className="p-3 rounded-xl bg-gradient-construction">
-                <Calculator className="w-6 h-6 text-construction-foreground" />
+        {/* Quick Actions Row */}
+        <div className="grid grid-cols-3 gap-6 mb-8">
+          <Card className="p-4 bg-white hover:shadow-lg transition-all duration-300">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="p-2 rounded-lg bg-construction/10">
+                <Calculator className="w-5 h-5 text-construction" />
               </div>
-              <div className="space-y-1">
-                <h3 className="font-bold text-foreground">Quick Quote</h3>
-                <p className="text-sm text-muted-foreground">Start a new quote in 15 minutes</p>
+              <div>
+                <h3 className="font-semibold text-foreground">Quick Quote</h3>
+                <p className="text-xs text-muted-foreground">Create a new quote in 15 minutes</p>
               </div>
             </div>
-            <Button asChild variant="outline" className="w-full mt-4">
+            <Button asChild variant="outline" size="sm" className="w-full">
               <Link to="/quote-builder">Create Quote</Link>
             </Button>
           </Card>
 
-          <Card className="p-6 hover:shadow-card transition-all duration-300">
-            <div className="flex items-center gap-4">
-              <div className="p-3 rounded-xl bg-gradient-primary">
-                <FileText className="w-6 h-6 text-primary-foreground" />
+          <Card className="p-4 bg-white hover:shadow-lg transition-all duration-300">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="p-2 rounded-lg bg-primary/10">
+                <Eye className="w-5 h-5 text-primary" />
               </div>
-              <div className="space-y-1">
-                <h3 className="font-bold text-foreground">View Quotes</h3>
-                <p className="text-sm text-muted-foreground">Manage all your quotes</p>
+              <div>
+                <h3 className="font-semibold text-foreground">View Quotes</h3>
+                <p className="text-xs text-muted-foreground">View All</p>
               </div>
             </div>
-            <Button asChild variant="outline" className="w-full mt-4">
+            <Button asChild variant="outline" size="sm" className="w-full">
               <Link to="/quotes">View All</Link>
             </Button>
           </Card>
 
-          <Card className="p-6 hover:shadow-card transition-all duration-300">
-            <div className="flex items-center gap-4">
-              <div className="p-3 rounded-xl bg-safety/20">
-                <TrendingUp className="w-6 h-6 text-safety" />
+          <Card className="p-4 bg-white hover:shadow-lg transition-all duration-300">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="p-2 rounded-lg bg-safety/10">
+                <TrendingUp className="w-5 h-5 text-safety" />
               </div>
-              <div className="space-y-1">
-                <h3 className="font-bold text-foreground">Analytics</h3>
-                <p className="text-sm text-muted-foreground">Track your performance</p>
+              <div>
+                <h3 className="font-semibold text-foreground">Analytics</h3>
+                <p className="text-xs text-muted-foreground">Track site performance</p>
               </div>
             </div>
-            <Button variant="outline" className="w-full mt-4" disabled>
+            <Button variant="outline" size="sm" className="w-full" disabled>
               Coming Soon
             </Button>
           </Card>
         </div>
 
-        {/* Recent Quotes */}
-        <Card className="overflow-hidden">
-          <div className="p-6 border-b border-border">
-            <div className="flex justify-between items-center">
-              <h2 className="text-xl font-bold text-foreground">Recent Quotes</h2>
-              <Button asChild variant="link">
-                <Link to="/quotes">View All</Link>
-              </Button>
-            </div>
-          </div>
-          <div className="divide-y divide-border">
-            {recentQuotes.map((quote) => (
-              <div key={quote.id} className="p-6 hover:bg-accent/50 transition-colors">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-3">
-                      <h3 className="font-semibold text-foreground">{quote.client}</h3>
-                      <span 
-                        className={`px-2 py-1 text-xs font-medium rounded-full border ${getStatusColor(quote.status)}`}
-                      >
-                        {quote.status}
-                      </span>
-                    </div>
-                    <p className="text-muted-foreground">{quote.project}</p>
-                    <p className="text-sm text-muted-foreground">{quote.createdAt}</p>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <div className="text-right">
-                      <p className="text-2xl font-bold text-foreground">{quote.amount}</p>
-                    </div>
-                    <Button variant="outline" size="sm">
-                      <Eye className="w-4 h-4" />
-                      View
-                    </Button>
-                  </div>
+        {/* Your Quotes Section */}
+        <div className="mb-6">
+          <h2 className="text-xl font-bold text-foreground mb-4">Your Quotes</h2>
+        </div>
+
+        {/* Quotes Grid */}
+        <div className="grid grid-cols-2 gap-4 mb-6">
+          {recentQuotes.slice(0, 6).map((quote, index) => (
+            <Card key={quote.id} className="p-4 bg-white hover:shadow-lg transition-all duration-300">
+              <div className="space-y-2">
+                <div className="flex justify-between items-start">
+                  <h3 className="font-semibold text-foreground">Quote {index + 1}</h3>
+                  <span className="text-xs text-muted-foreground">{quote.createdAt}</span>
                 </div>
+                <p className="text-sm text-muted-foreground">{quote.client}</p>
+                <p className="text-xs text-muted-foreground">{quote.project}</p>
               </div>
-            ))}
-          </div>
-        </Card>
-      </div>
+            </Card>
+          ))}
+        </div>
+
+        {/* See All Quotes Button */}
+        <div className="text-center">
+          <Button asChild variant="outline" className="bg-muted hover:bg-muted/80 text-foreground">
+            <Link to="/quotes">See All Quotes</Link>
+          </Button>
+        </div>
     </div>
   );
 }
