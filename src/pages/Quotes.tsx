@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -94,6 +95,7 @@ const getStatusColor = (status: string) => {
 };
 
 export default function Quotes() {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
 
@@ -247,7 +249,11 @@ export default function Quotes() {
                   </div>
 
                   <div className="flex items-center gap-2">
-                    <Button variant="outline" size="sm">
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => navigate(`/quotes/Q-${quote.id.toString().padStart(3, '0')}`)}
+                    >
                       <Eye className="w-4 h-4" />
                       View
                     </Button>

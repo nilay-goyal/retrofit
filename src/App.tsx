@@ -9,6 +9,7 @@ import Dashboard from "./pages/Dashboard";
 import QuoteBuilder from "./pages/QuoteBuilder";
 import Quotes from "./pages/Quotes";
 import Rebates from "./pages/Rebates";
+import QuoteDetails from "./pages/QuoteDetails";
 
 import NotFound from "./pages/NotFound";
 
@@ -27,6 +28,7 @@ const App = () => (
             <Route path="/quote-builder" element={<QuoteBuilder />} />
             <Route path="/quotes" element={<Quotes />} />
             <Route path="/rebates" element={<Rebates />} />
+            <Route path="/quotes/:id" element={<QuoteDetails />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
