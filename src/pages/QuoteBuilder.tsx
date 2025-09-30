@@ -44,6 +44,8 @@ export default function QuoteBuilder() {
     photos: [] as File[],
     
     // Step 3: Calculations (auto-calculated)
+    materialRate: 2.50, // $2.50 per sq ft
+    laborRate: 1.80, // $1.80 per sq ft
     materialCost: 0,
     laborCost: 0,
     rebateAmount: 0,
@@ -74,8 +76,8 @@ export default function QuoteBuilder() {
 
   const calculateCosts = () => {
     const sqft = parseFloat(formData.squareFootage) || 0;
-    const materialRate = 2.50; // $2.50 per sq ft
-    const laborRate = 1.80; // $1.80 per sq ft
+    const materialRate = parseFloat(formData.materialRate.toString()) || 0;
+    const laborRate = parseFloat(formData.laborRate.toString()) || 0;
     const materialCost = sqft * materialRate;
     const laborCost = sqft * laborRate;
     const baseTotal = materialCost + laborCost;
@@ -303,33 +305,69 @@ export default function QuoteBuilder() {
           <div className="space-y-6">
             <div className="text-center space-y-2">
               <h2 className="text-2xl font-bold text-foreground">Cost Calculations</h2>
-              <p className="text-muted-foreground">Review automatically calculated costs and rebates</p>
+              <p className="text-muted-foreground">Enter your rates and calculate costs with rebates</p>
             </div>
             
             <div className="grid md:grid-cols-2 gap-6">
-              <Card className="p-6 space-y-4">
+              <Card className="p-6 bg-white/80 backdrop-blur-sm border-white/20 space-y-4">
                 <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
-                  <Calculator className="w-5 h-5 text-construction" />
+                  <Calculator className="w-5 h-5 text-[#4f75fd]" />
                   Material & Labor Costs
                 </h3>
                 
-                <div className="space-y-3">
+                <div className="space-y-4">
                   <div className="flex justify-between items-center py-2 border-b border-border">
                     <span className="text-muted-foreground">Area to insulate:</span>
                     <span className="font-semibold">{formData.squareFootage} sq ft</span>
                   </div>
-                  <div className="flex justify-between items-center py-2 border-b border-border">
-                    <span className="text-muted-foreground">Materials ($2.50/sq ft):</span>
-                    <span className="font-semibold">${formData.materialCost.toFixed(2)}</span>
+                  
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="materialRate">Material Rate ($/sq ft)</Label>
+                      <Input
+                        id="materialRate"
+                        type="number"
+                        step="0.01"
+                        value={formData.materialRate}
+                        onChange={(e) => handleInputChange("materialRate", e.target.value)}
+                        placeholder="2.50"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="laborRate">Labor Rate ($/sq ft)</Label>
+                      <Input
+                        id="laborRate"
+                        type="number"
+                        step="0.01"
+                        value={formData.laborRate}
+                        onChange={(e) => handleInputChange("laborRate", e.target.value)}
+                        placeholder="1.80"
+                      />
+                    </div>
                   </div>
-                  <div className="flex justify-between items-center py-2 border-b border-border">
-                    <span className="text-muted-foreground">Labor ($1.80/sq ft):</span>
-                    <span className="font-semibold">${formData.laborCost.toFixed(2)}</span>
+                  
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center py-2 border-b border-border">
+                      <span className="text-muted-foreground">Materials:</span>
+                      <span className="font-semibold">${formData.materialCost.toFixed(2)}</span>
+                    </div>
+                    <div className="flex justify-between items-center py-2 border-b border-border">
+                      <span className="text-muted-foreground">Labor:</span>
+                      <span className="font-semibold">${formData.laborCost.toFixed(2)}</span>
+                    </div>
+                    <div className="flex justify-between items-center py-2 text-lg font-bold">
+                      <span>Subtotal:</span>
+                      <span>${(formData.materialCost + formData.laborCost).toFixed(2)}</span>
+                    </div>
                   </div>
-                  <div className="flex justify-between items-center py-2 text-lg font-bold">
-                    <span>Subtotal:</span>
-                    <span>${(formData.materialCost + formData.laborCost).toFixed(2)}</span>
-                  </div>
+                  
+                  <Button 
+                    onClick={calculateCosts}
+                    className="w-full bg-[#4f75fd] hover:bg-[#618af2] text-white"
+                  >
+                    <Calculator className="w-4 h-4 mr-2" />
+                    Recalculate Costs
+                  </Button>
                 </div>
               </Card>
               

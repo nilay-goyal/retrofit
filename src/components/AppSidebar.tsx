@@ -45,7 +45,7 @@ export function AppSidebar() {
 
   const isActive = (path: string) => currentPath === path;
   const getNavCls = ({ isActive }: { isActive: boolean }) =>
-    isActive ? "bg-[#4f75fd]/10 text-[#4f75fd] font-medium" : "hover:bg-white/50";
+    isActive ? "bg-green-100 text-green-600 font-medium" : "hover:bg-gray-50";
 
   const getUserInitials = () => {
     if (!user) return "U";
@@ -58,9 +58,9 @@ export function AppSidebar() {
       className={state === "collapsed" ? "w-14" : "w-64"}
       collapsible="icon"
     >
-      <SidebarContent className="bg-white/80 backdrop-blur-sm border-r border-white/20">
+      <SidebarContent className="bg-white border-r border-gray-200">
         {/* User Profile */}
-        <div className="p-4 border-b border-white/20">
+        <div className="p-4 border-b border-gray-200">
           <div className="flex items-center gap-3">
             <Avatar className="w-8 h-8">
               <AvatarImage src={user?.user_metadata?.avatar_url} />
@@ -120,8 +120,8 @@ export function AppSidebar() {
       </SidebarContent>
 
       {/* Footer with Logout */}
-      <SidebarFooter className="p-4 border-t border-white/20">
-        <SidebarMenuButton onClick={signOut} className="bg-white/50 hover:bg-white/70 text-black">
+      <SidebarFooter className="p-4 border-t border-gray-200">
+        <SidebarMenuButton onClick={signOut} className="bg-gray-50 hover:bg-gray-100 text-gray-700">
           <LogOut className="mr-2 h-4 w-4" />
           {state !== "collapsed" && <span>Log Out</span>}
         </SidebarMenuButton>

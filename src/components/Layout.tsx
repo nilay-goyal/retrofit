@@ -72,10 +72,8 @@ export default function Layout({ children }: LayoutProps) {
       <SidebarProvider>
         <div className="min-h-screen flex w-full">
           <AppSidebar />
-          <main className="flex-1" style={{
-            background: 'linear-gradient(180deg, #c1fabe 0%, #a2d5cc 50%, #8fc1d6 100%)'
-          }}>
-            <header className="h-12 flex items-center border-b bg-white/80 backdrop-blur-sm px-4">
+          <main className="flex-1 bg-gray-50">
+            <header className="h-12 flex items-center border-b bg-white px-4">
               <SidebarTrigger />
               <Link to="/" className="ml-4 flex items-center gap-3 hover:opacity-80 transition-opacity">
                 <img

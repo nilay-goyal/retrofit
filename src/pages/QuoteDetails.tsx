@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { ArrowLeft, Download, Edit, Mail, Phone, MapPin, Calendar, DollarSign } from 'lucide-react';
+import { ArrowLeft, Download, Edit, Mail, Phone, MapPin, Calendar, DollarSign, Upload, Camera, ChevronLeft, ChevronRight } from 'lucide-react';
 
 // Mock data - in a real app this would come from an API
 const allQuotes = [
@@ -32,7 +32,12 @@ const allQuotes = [
       rate: 85,
       total: 1360
     },
-    notes: "Customer requested eco-friendly materials. Property is a 1950s bungalow with existing R20 insulation to be topped up."
+    notes: "Customer requested eco-friendly materials. Property is a 1950s bungalow with existing R20 insulation to be topped up.",
+    images: [
+      "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=400&h=300&fit=crop",
+      "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=400&h=300&fit=crop",
+      "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=400&h=300&fit=crop"
+    ]
   },
   {
     id: "Q-002", 
@@ -58,7 +63,11 @@ const allQuotes = [
       rate: 85,
       total: 1020
     },
-    notes: "Basement shows some moisture issues. Recommended dehumidifier installation."
+    notes: "Basement shows some moisture issues. Recommended dehumidifier installation.",
+    images: [
+      "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=400&h=300&fit=crop",
+      "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=400&h=300&fit=crop"
+    ]
   }
 ];
 
@@ -75,6 +84,8 @@ const getStatusColor = (status: string) => {
 const QuoteDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [uploadedImages, setUploadedImages] = useState<string[]>([]);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   
   const quote = allQuotes.find(q => q.id === id);
   
@@ -100,6 +111,23 @@ const QuoteDetails = () => {
   const subtotal = quote.materials.reduce((sum, item) => sum + item.total, 0) + quote.labor.total;
   const tax = subtotal * 0.13; // 13% HST
   const total = subtotal + tax;
+
+  const handleFileUpload = (files: FileList | null) => {
+    if (files) {
+      const newImages = Array.from(files).map(file => URL.createObjectURL(file));
+      setUploadedImages(prev => [...prev, ...newImages]);
+    }
+  };
+
+  const nextImage = () => {
+    const allImages = [...(quote?.images || []), ...uploadedImages];
+    setCurrentImageIndex((prev) => (prev + 1) % allImages.length);
+  };
+
+  const prevImage = () => {
+    const allImages = [...(quote?.images || []), ...uploadedImages];
+    setCurrentImageIndex((prev) => (prev - 1 + allImages.length) % allImages.length);
+  };
 
   return (
     <div className="min-h-screen bg-background p-6">
@@ -178,6 +206,101 @@ const QuoteDetails = () => {
                 </div>
               </div>
             </div>
+          </CardContent>
+        </Card>
+
+        {/* Image Carousel Section */}
+        <Card className="mb-6">
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <CardTitle className="flex items-center gap-2">
+                <Camera className="w-5 h-5 text-green-500" />
+                Project Images
+              </CardTitle>
+              <div className="relative">
+                <input
+                  type="file"
+                  multiple
+                  accept="image/*"
+                  onChange={(e) => handleFileUpload(e.target.files)}
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                />
+                <Button size="sm" className="bg-green-500 hover:bg-green-600 text-white">
+                  <Upload className="w-4 h-4 mr-2" />
+                  Upload
+                </Button>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent>
+            {(() => {
+              const allImages = [...(quote?.images || []), ...uploadedImages];
+              if (allImages.length === 0) {
+                return (
+                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
+                    <Camera className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                    <p className="text-gray-600 text-sm">No images uploaded yet</p>
+                  </div>
+                );
+              }
+
+              return (
+                <div className="space-y-3">
+                  {/* Main Image Display */}
+                  <div className="relative aspect-video bg-gray-100 rounded-lg overflow-hidden">
+                    <img
+                      src={allImages[currentImageIndex]}
+                      alt={`Project image ${currentImageIndex + 1}`}
+                      className="w-full h-full object-cover"
+                    />
+                    
+                    {/* Navigation Arrows */}
+                    {allImages.length > 1 && (
+                      <>
+                        <button
+                          onClick={prevImage}
+                          className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-1 rounded-full transition-all"
+                        >
+                          <ChevronLeft className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={nextImage}
+                          className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-1 rounded-full transition-all"
+                        >
+                          <ChevronRight className="w-4 h-4" />
+                        </button>
+                      </>
+                    )}
+
+                    {/* Image Counter */}
+                    <div className="absolute bottom-2 right-2 bg-black/70 text-white px-2 py-1 rounded text-xs">
+                      {currentImageIndex + 1} / {allImages.length}
+                    </div>
+                  </div>
+
+                  {/* Thumbnail Carousel */}
+                  <div className="flex gap-1 overflow-x-auto pb-1">
+                    {allImages.map((image, index) => (
+                      <button
+                        key={index}
+                        onClick={() => setCurrentImageIndex(index)}
+                        className={`flex-shrink-0 w-16 h-16 rounded overflow-hidden border-2 transition-all ${
+                          index === currentImageIndex
+                            ? 'border-green-500 shadow-md'
+                            : 'border-gray-300 hover:border-green-300'
+                        }`}
+                      >
+                        <img
+                          src={image}
+                          alt={`Thumbnail ${index + 1}`}
+                          className="w-full h-full object-cover"
+                        />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              );
+            })()}
           </CardContent>
         </Card>
 

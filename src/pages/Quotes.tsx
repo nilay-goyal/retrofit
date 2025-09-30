@@ -25,57 +25,13 @@ const allQuotes = [
     amount: 2850,
     status: "Pending",
     createdAt: "2024-03-15",
-    address: "123 Oak Street, Springfield"
-  },
-  {
-    id: 2,
-    client: "Johnson Home",
-    email: "mary.johnson@email.com", 
-    project: "Wall Insulation - 800 sq ft",
-    amount: 3400,
-    status: "Approved",
-    createdAt: "2024-03-14",
-    address: "456 Pine Avenue, Springfield"
-  },
-  {
-    id: 3,
-    client: "Williams Property",
-    email: "bob.williams@email.com",
-    project: "Basement Insulation - 600 sq ft", 
-    amount: 1950,
-    status: "Sent",
-    createdAt: "2024-03-12",
-    address: "789 Maple Drive, Springfield"
-  },
-  {
-    id: 4,
-    client: "Davis Residence",
-    email: "sarah.davis@email.com",
-    project: "Whole House Insulation - 2,000 sq ft",
-    amount: 5200,
-    status: "Approved",
-    createdAt: "2024-03-10",
-    address: "321 Elm Street, Springfield"
-  },
-  {
-    id: 5,
-    client: "Brown Property", 
-    email: "mike.brown@email.com",
-    project: "Attic Insulation - 900 sq ft",
-    amount: 2150,
-    status: "Rejected",
-    createdAt: "2024-03-08",
-    address: "654 Cedar Lane, Springfield"
-  },
-  {
-    id: 6,
-    client: "Wilson Home",
-    email: "lisa.wilson@email.com",
-    project: "Crawl Space Insulation - 450 sq ft",
-    amount: 1400,
-    status: "Sent",
-    createdAt: "2024-03-05",
-    address: "987 Birch Road, Springfield"
+    address: "123 Oak Street, Springfield",
+    images: [
+      "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=400&h=300&fit=crop",
+      "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=400&h=300&fit=crop",
+      "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=400&h=300&fit=crop",
+      "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=400&h=300&fit=crop"
+    ]
   }
 ];
 
