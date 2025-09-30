@@ -28,7 +28,7 @@ import {
 
 const discoverItems = [
   { title: "My Home", url: "/dashboard", icon: Home },
-  { title: "Project Documents", url: "/quotes", icon: FileText },
+  { title: "Quotes", url: "/quotes", icon: FileText },
   { title: "Rebate Finder", url: "/rebates", icon: MapPin },
   { title: "Document Templates", url: "/templates", icon: FileImage },
 ];
@@ -45,7 +45,7 @@ export function AppSidebar() {
 
   const isActive = (path: string) => currentPath === path;
   const getNavCls = ({ isActive }: { isActive: boolean }) =>
-    isActive ? "bg-construction/10 text-construction font-medium" : "hover:bg-muted/50";
+    isActive ? "bg-[#4f75fd]/10 text-[#4f75fd] font-medium" : "hover:bg-white/50";
 
   const getUserInitials = () => {
     if (!user) return "U";
@@ -58,9 +58,9 @@ export function AppSidebar() {
       className={state === "collapsed" ? "w-14" : "w-64"}
       collapsible="icon"
     >
-      <SidebarContent className="bg-background border-r">
+      <SidebarContent className="bg-white/80 backdrop-blur-sm border-r border-white/20">
         {/* User Profile */}
-        <div className="p-4 border-b">
+        <div className="p-4 border-b border-white/20">
           <div className="flex items-center gap-3">
             <Avatar className="w-8 h-8">
               <AvatarImage src={user?.user_metadata?.avatar_url} />
@@ -120,8 +120,8 @@ export function AppSidebar() {
       </SidebarContent>
 
       {/* Footer with Logout */}
-      <SidebarFooter className="p-4 border-t">
-        <SidebarMenuButton onClick={signOut} className="bg-muted/50 hover:bg-muted text-foreground">
+      <SidebarFooter className="p-4 border-t border-white/20">
+        <SidebarMenuButton onClick={signOut} className="bg-white/50 hover:bg-white/70 text-black">
           <LogOut className="mr-2 h-4 w-4" />
           {state !== "collapsed" && <span>Log Out</span>}
         </SidebarMenuButton>

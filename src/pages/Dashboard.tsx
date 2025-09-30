@@ -91,7 +91,7 @@ export default function Dashboard() {
         <div>
           <h1 className="text-2xl font-bold text-foreground">Your Metrics</h1>
         </div>
-        <Button className="bg-muted hover:bg-muted/80 text-foreground border">
+        <Button className="bg-[#4f75fd] hover:bg-[#618af2] text-white border-0">
           <Plus className="w-4 h-4 mr-2" />
           Add New Project
         </Button>
@@ -102,13 +102,13 @@ export default function Dashboard() {
           {stats.map((stat) => {
             const Icon = stat.icon;
             return (
-              <Card key={stat.label} className="p-6 bg-white hover:shadow-lg transition-all duration-300">
+              <Card key={stat.label} className="p-6 bg-white/80 backdrop-blur-sm hover:shadow-lg transition-all duration-300 border-white/20">
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
                     <p className="text-sm text-muted-foreground font-medium">
                       {stat.label}
                     </p>
-                    <div className={`p-2 rounded-lg ${stat.color === 'text-construction' ? 'bg-construction/10' : stat.color === 'text-success' ? 'bg-success/10' : stat.color === 'text-safety' ? 'bg-safety/10' : 'bg-primary/10'}`}>
+                    <div className={`p-2 rounded-lg ${stat.color === 'text-construction' ? 'bg-[#2b3b26]/10' : stat.color === 'text-success' ? 'bg-[#4f75fd]/10' : stat.color === 'text-safety' ? 'bg-[#8fc1d6]/10' : 'bg-[#4f75fd]/10'}`}>
                       <Icon className={`w-5 h-5 ${stat.color}`} />
                     </div>
                   </div>
@@ -128,7 +128,7 @@ export default function Dashboard() {
 
         {/* Quick Actions Row */}
         <div className="grid grid-cols-3 gap-6 mb-8">
-          <Card className="p-4 bg-white hover:shadow-lg transition-all duration-300">
+          <Card className="p-4 bg-white/80 backdrop-blur-sm hover:shadow-lg transition-all duration-300 border-white/20">
             <div className="flex items-center gap-3 mb-3">
               <div className="p-2 rounded-lg bg-construction/10">
                 <Calculator className="w-5 h-5 text-construction" />
@@ -143,7 +143,7 @@ export default function Dashboard() {
             </Button>
           </Card>
 
-          <Card className="p-4 bg-white hover:shadow-lg transition-all duration-300">
+          <Card className="p-4 bg-white/80 backdrop-blur-sm hover:shadow-lg transition-all duration-300 border-white/20">
             <div className="flex items-center gap-3 mb-3">
               <div className="p-2 rounded-lg bg-primary/10">
                 <Eye className="w-5 h-5 text-primary" />
@@ -158,7 +158,7 @@ export default function Dashboard() {
             </Button>
           </Card>
 
-          <Card className="p-4 bg-white hover:shadow-lg transition-all duration-300">
+          <Card className="p-4 bg-white/80 backdrop-blur-sm hover:shadow-lg transition-all duration-300 border-white/20">
             <div className="flex items-center gap-3 mb-3">
               <div className="p-2 rounded-lg bg-safety/10">
                 <TrendingUp className="w-5 h-5 text-safety" />
@@ -182,7 +182,7 @@ export default function Dashboard() {
         {/* Quotes Grid */}
         <div className="grid grid-cols-2 gap-4 mb-6">
           {recentQuotes.slice(0, 6).map((quote, index) => (
-            <Card key={quote.id} className="p-4 bg-white hover:shadow-lg transition-all duration-300">
+            <Card key={quote.id} className="p-4 bg-white/80 backdrop-blur-sm hover:shadow-lg transition-all duration-300 border-white/20">
               <div className="space-y-2">
                 <div className="flex justify-between items-start">
                   <h3 className="font-semibold text-foreground">Quote {index + 1}</h3>
@@ -197,7 +197,7 @@ export default function Dashboard() {
 
         {/* See All Quotes Button */}
         <div className="text-center">
-          <Button asChild variant="outline" className="bg-muted hover:bg-muted/80 text-foreground">
+          <Button asChild variant="outline" className="bg-white/80 hover:bg-white text-[#4f75fd] border-[#4f75fd]">
             <Link to="/quotes">See All Quotes</Link>
           </Button>
         </div>

@@ -124,8 +124,10 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-4">
-      <Card className="w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center p-4" style={{
+      background: 'linear-gradient(180deg, #c1fabe 0%, #a2d5cc 50%, #8fc1d6 100%)'
+    }}>
+      <Card className="w-full max-w-md bg-white/90 backdrop-blur-sm shadow-xl border-white/20">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold text-center">Welcome</CardTitle>
           <CardDescription className="text-center">
@@ -162,7 +164,7 @@ export default function Auth() {
                     disabled={isLoading}
                   />
                 </div>
-                <Button type="submit" className="w-full" disabled={isLoading}>
+                <Button type="submit" className="w-full bg-[#4f75fd] hover:bg-[#618af2] text-white" disabled={isLoading}>
                   {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   Sign In
                 </Button>
@@ -243,7 +245,7 @@ export default function Auth() {
                     disabled={isLoading}
                   />
                 </div>
-                <Button type="submit" className="w-full" disabled={isLoading}>
+                <Button type="submit" className="w-full bg-[#4f75fd] hover:bg-[#618af2] text-white" disabled={isLoading}>
                   {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   Sign Up
                 </Button>

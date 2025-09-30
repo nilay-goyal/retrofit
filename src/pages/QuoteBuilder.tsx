@@ -199,7 +199,7 @@ export default function QuoteBuilder() {
             </div>
             
             {/* Photo Upload */}
-            <Card className="p-6">
+            <Card className="p-6 bg-white/80 backdrop-blur-sm border-white/20">
               <div className="space-y-4">
                 <div className="flex items-center gap-2">
                   <Camera className="w-5 h-5 text-construction" />
@@ -243,7 +243,7 @@ export default function QuoteBuilder() {
             </Card>
             
             {/* Measurements */}
-            <Card className="p-6">
+            <Card className="p-6 bg-white/80 backdrop-blur-sm border-white/20">
               <div className="space-y-4">
                 <div className="flex items-center gap-2">
                   <Ruler className="w-5 h-5 text-construction" />
@@ -342,8 +342,8 @@ export default function QuoteBuilder() {
                 <div className="space-y-3">
                   {formData.postalCode ? (
                     <>
-                      <div className="p-4 bg-success/10 border border-success/20 rounded-lg">
-                        <p className="text-sm font-medium text-success mb-1">
+                      <div className="p-4 bg-[#4f75fd]/10 border border-[#4f75fd]/20 rounded-lg">
+                        <p className="text-sm font-medium text-[#4f75fd] mb-1">
                           ✓ Rebate Found for {formData.postalCode}
                         </p>
                         <p className="text-xs text-muted-foreground">
@@ -352,7 +352,7 @@ export default function QuoteBuilder() {
                       </div>
                       <div className="flex justify-between items-center py-2 border-b border-border">
                         <span className="text-muted-foreground">Rebate amount (15%):</span>
-                        <span className="font-semibold text-success">-${formData.rebateAmount.toFixed(2)}</span>
+                        <span className="font-semibold text-[#4f75fd]">-${formData.rebateAmount.toFixed(2)}</span>
                       </div>
                     </>
                   ) : (
@@ -366,18 +366,18 @@ export default function QuoteBuilder() {
               </Card>
             </div>
             
-            <Card className="p-6 bg-gradient-construction/5">
+            <Card className="p-6 bg-gradient-to-r from-[#4f75fd]/5 to-[#618af2]/5 border-white/20">
               <div className="flex justify-between items-center">
                 <div>
                   <h3 className="text-2xl font-bold text-foreground">Total Project Cost</h3>
                   <p className="text-muted-foreground">Final amount after rebates</p>
                 </div>
                 <div className="text-right">
-                  <div className="text-4xl font-bold text-construction">
+                  <div className="text-4xl font-bold text-[#4f75fd]">
                     ${formData.totalCost.toFixed(2)}
                   </div>
                   {formData.rebateAmount > 0 && (
-                    <div className="text-sm text-success">
+                    <div className="text-sm text-[#4f75fd]">
                       You save ${formData.rebateAmount.toFixed(2)}
                     </div>
                   )}
@@ -396,7 +396,7 @@ export default function QuoteBuilder() {
             </div>
             
             <div className="grid md:grid-cols-2 gap-6">
-              <Card className="p-6">
+              <Card className="p-6 bg-white/80 backdrop-blur-sm border-white/20">
                 <h3 className="text-lg font-semibold text-foreground mb-4">Project Summary</h3>
                 <div className="space-y-3 text-sm">
                   <div className="flex justify-between">
@@ -422,7 +422,7 @@ export default function QuoteBuilder() {
                 </div>
               </Card>
               
-              <Card className="p-6">
+              <Card className="p-6 bg-white/80 backdrop-blur-sm border-white/20">
                 <h3 className="text-lg font-semibold text-foreground mb-4">Cost Breakdown</h3>
                 <div className="space-y-3 text-sm">
                   <div className="flex justify-between">
@@ -448,8 +448,8 @@ export default function QuoteBuilder() {
             </div>
             
             <div className="text-center space-y-4">
-              <div className="p-6 bg-gradient-construction/5 rounded-lg">
-                <CheckCircle className="w-16 h-16 text-construction mx-auto mb-4" />
+              <div className="p-6 bg-gradient-to-r from-[#4f75fd]/5 to-[#618af2]/5 rounded-lg border-white/20">
+                <CheckCircle className="w-16 h-16 text-[#4f75fd] mx-auto mb-4" />
                 <h3 className="text-xl font-bold text-foreground mb-2">
                   Quote Ready to Generate!
                 </h3>
@@ -459,7 +459,7 @@ export default function QuoteBuilder() {
                 </p>
               </div>
               
-              <Button variant="construction" size="xl" className="w-full sm:w-auto">
+              <Button variant="construction" size="xl" className="w-full sm:w-auto bg-[#4f75fd] hover:bg-[#618af2] text-white">
                 <FileText className="w-5 h-5" />
                 Generate PDF Quote
               </Button>
@@ -473,7 +473,9 @@ export default function QuoteBuilder() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-subtle">
+    <div className="min-h-screen" style={{
+      background: 'linear-gradient(180deg, #c1fabe 0%, #a2d5cc 50%, #8fc1d6 100%)'
+    }}>
       <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-8">
         {/* Progress Steps */}
         <div className="mb-8">
@@ -519,7 +521,7 @@ export default function QuoteBuilder() {
         </div>
 
         {/* Step Content */}
-        <Card className="p-8">
+        <Card className="p-8 bg-white/80 backdrop-blur-sm border-white/20">
           {renderStepContent()}
         </Card>
 
@@ -529,6 +531,7 @@ export default function QuoteBuilder() {
             variant="outline" 
             onClick={prevStep}
             disabled={currentStep === 1}
+            className="bg-white/80 hover:bg-white text-[#4f75fd] border-[#4f75fd]"
           >
             <ArrowLeft className="w-4 h-4" />
             Previous
@@ -538,6 +541,7 @@ export default function QuoteBuilder() {
             variant="construction"
             onClick={nextStep}
             disabled={currentStep === 4}
+            className="bg-[#4f75fd] hover:bg-[#618af2] text-white"
           >
             Next
             <ArrowRight className="w-4 h-4" />
