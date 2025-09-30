@@ -9,6 +9,8 @@ import {
   User
 } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 import {
   Sidebar,
@@ -37,12 +39,19 @@ const helpItems = [
 
 export function AppSidebar() {
   const { state } = useSidebar();
+  const { user, signOut } = useAuth();
   const location = useLocation();
   const currentPath = location.pathname;
 
   const isActive = (path: string) => currentPath === path;
   const getNavCls = ({ isActive }: { isActive: boolean }) =>
     isActive ? "bg-construction/10 text-construction font-medium" : "hover:bg-muted/50";
+
+  const getUserInitials = () => {
+    if (!user) return "U";
+    const email = user.email || "";
+    return email.substring(0, 2).toUpperCase();
+  };
 
   return (
     <Sidebar
@@ -53,12 +62,15 @@ export function AppSidebar() {
         {/* User Profile */}
         <div className="p-4 border-b">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-construction rounded-full flex items-center justify-center">
-              <User className="w-4 h-4 text-white" />
-            </div>
+            <Avatar className="w-8 h-8">
+              <AvatarImage src={user?.user_metadata?.avatar_url} />
+              <AvatarFallback>{getUserInitials()}</AvatarFallback>
+            </Avatar>
             {state !== "collapsed" && (
               <div>
-                <p className="font-semibold text-foreground">John Doe</p>
+                <p className="font-semibold text-foreground">
+                  {user?.user_metadata?.full_name || user?.email?.split('@')[0] || "User"}
+                </p>
               </div>
             )}
           </div>
@@ -109,7 +121,7 @@ export function AppSidebar() {
 
       {/* Footer with Logout */}
       <SidebarFooter className="p-4 border-t">
-        <SidebarMenuButton className="bg-muted/50 hover:bg-muted text-foreground">
+        <SidebarMenuButton onClick={signOut} className="bg-muted/50 hover:bg-muted text-foreground">
           <LogOut className="mr-2 h-4 w-4" />
           {state !== "collapsed" && <span>Log Out</span>}
         </SidebarMenuButton>

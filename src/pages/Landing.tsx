@@ -1,7 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
 import { 
   Calculator, 
   Clock, 
@@ -54,6 +55,11 @@ const benefits = [
 ];
 
 export default function Landing() {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const ctaText = user ? "Go to Dashboard" : "Get Started";
+  const ctaLink = user ? "/dashboard" : "/auth";
+
   return (
     <div className="min-h-screen bg-gradient-subtle">
       {/* Header */}
@@ -70,7 +76,7 @@ export default function Landing() {
               </div>
             </div>
             <Button asChild variant="construction" size="sm">
-              <Link to="/dashboard">Get Started</Link>
+              <Link to={ctaLink}>{ctaText}</Link>
             </Button>
           </div>
         </div>
@@ -96,8 +102,8 @@ export default function Landing() {
 
               <div className="flex flex-col sm:flex-row gap-4">
                 <Button asChild variant="hero" size="xl">
-                  <Link to="/dashboard">
-                    Start Free Quote
+                  <Link to={ctaLink}>
+                    {ctaText}
                     <ArrowRight className="w-5 h-5" />
                   </Link>
                 </Button>

@@ -1,9 +1,10 @@
-import { ReactNode, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { ReactNode, useState, useEffect } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "./AppSidebar";
+import { useAuth } from "@/hooks/useAuth";
 import { 
   Calculator, 
   FileText, 
@@ -25,7 +26,16 @@ const navigation = [
 
 export default function Layout({ children }: LayoutProps) {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user, loading } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const isLandingPage = location.pathname === "/";
+  const isAuthPage = location.pathname === "/auth";
+
+  // Protected routes - routes that require authentication
+  const protectedRoutes = ["/dashboard", "/quotes", "/quote-builder", "/rebates", "/settings", "/templates"];
+  const isProtectedRoute = protectedRoutes.some(route => location.pathname.startsWith(route));
 
   // Show sidebar layout for dashboard and related pages
   const showSidebar = location.pathname.startsWith('/dashboard') || 
@@ -34,8 +44,24 @@ export default function Layout({ children }: LayoutProps) {
                      location.pathname.startsWith('/rebates') ||
                      location.pathname.startsWith('/templates');
 
-  // Render children directly if on home page
-  if (location.pathname === "/") {
+  // Redirect to auth if accessing protected route without being logged in
+  useEffect(() => {
+    if (!loading && !user && isProtectedRoute) {
+      navigate("/auth");
+    }
+  }, [user, loading, isProtectedRoute, navigate]);
+
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  // Render children directly if on landing or auth page
+  if (isLandingPage || isAuthPage) {
     return <>{children}</>;
   }
 
