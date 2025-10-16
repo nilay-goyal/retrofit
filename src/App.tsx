@@ -11,9 +11,13 @@ import Dashboard from "./pages/Dashboard";
 import QuoteBuilder from "./pages/QuoteBuilder";
 import Quotes from "./pages/Quotes";
 import Rebates from "./pages/Rebates";
-import Settings from "./pages/Settings";
 import QuoteDetails from "./pages/QuoteDetails";
+import Settings from "./pages/Settings";
+import DocumentsTemplates from "./pages/DocumentsTemplates";
+
 import NotFound from "./pages/NotFound";
+
+const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -29,9 +33,10 @@ const App = () => (
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/quote-builder" element={<QuoteBuilder />} />
               <Route path="/quotes" element={<Quotes />} />
+              <Route path="/rebates" element={<Rebates />} />
               <Route path="/quotes/:id" element={<QuoteDetails />} />
               <Route path="/settings" element={<Settings />} />
-              <Route path="/rebates" element={<Rebates />} />
+              <Route path="/templates" element={<DocumentsTemplates />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
