@@ -6,50 +6,54 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import { ArrowLeft, User, Mail, Phone, HelpCircle, Settings as SettingsIcon, Shield, MapPin, Calendar } from 'lucide-react';
+import { ArrowLeft, User, Mail, Phone, HelpCircle, Settings as SettingsIcon, Shield, MapPin, Calendar, Loader2 } from 'lucide-react';
+import { useSettings } from '@/hooks/useSettings';
+import { useToast } from '@/hooks/use-toast';
 
 export default function Settings() {
   const navigate = useNavigate();
-  
-  // State for form fields
-  const [profile, setProfile] = useState({
-    name: 'John Smith',
-    email: 'john.smith@email.com',
-    phone: '(555) 123-4567'
-  });
-  
-  const [account, setAccount] = useState({
-    email: 'john.smith@email.com',
-    password: '••••••••'
-  });
-  
-  const [preferences, setPreferences] = useState({
-    notifications: true,
-    dataSync: true
-  });
-  
-  const [personalInfo, setPersonalInfo] = useState({
-    nextOfKin: 'Jane Smith',
-    city: 'Toronto',
-    country: 'Canada',
-    expiryDate: '2025-12-31',
-    billingAddress: '123 Main Street',
-    billingCity: 'Toronto',
-    province: 'Ontario'
-  });
+  const { toast } = useToast();
+  const { 
+    settings, 
+    loading, 
+    saving, 
+    error, 
+    saveSettings, 
+    updateSettings 
+  } = useSettings();
   
   const [supportMessage, setSupportMessage] = useState('');
 
   const handleProfileChange = (field: string, value: string) => {
-    setProfile(prev => ({ ...prev, [field]: value }));
+    updateSettings('profile', field, value);
   };
 
   const handleAccountChange = (field: string, value: string) => {
-    setAccount(prev => ({ ...prev, [field]: value }));
+    updateSettings('account', field, value);
   };
 
   const handlePersonalInfoChange = (field: string, value: string) => {
-    setPersonalInfo(prev => ({ ...prev, [field]: value }));
+    updateSettings('personalInfo', field, value);
+  };
+
+  const handlePreferencesChange = (field: string, value: boolean) => {
+    updateSettings('preferences', field, value);
+  };
+
+  const handleSaveSettings = async () => {
+    const success = await saveSettings(settings);
+    if (success) {
+      toast({
+        title: "Settings saved",
+        description: "Your settings have been saved successfully.",
+      });
+    } else {
+      toast({
+        title: "Error saving settings",
+        description: error || "Failed to save settings. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleSupportSearch = () => {
@@ -66,6 +70,18 @@ export default function Settings() {
     // Handle cache clearing
     console.log('Clear cache clicked');
   };
+
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-[#4f75fd]" />
+          <p className="text-gray-600">Loading settings...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -85,6 +101,15 @@ export default function Settings() {
             <p className="text-gray-600">Manage your account and preferences</p>
           </div>
         </div>
+
+        {/* Error Display */}
+        {error && (
+          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+            <p className="text-red-800 text-sm">
+              <strong>Error:</strong> {error}
+            </p>
+          </div>
+        )}
 
         {/* Main Grid Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -113,9 +138,10 @@ export default function Settings() {
                     <Label htmlFor="name" className="text-sm font-medium text-gray-700">Name</Label>
                     <Input
                       id="name"
-                      value={profile.name}
+                      value={settings.profile.name}
                       onChange={(e) => handleProfileChange('name', e.target.value)}
                       className="mt-1 border-gray-300 focus:border-[#4f75fd] focus:ring-[#4f75fd]"
+                      disabled={loading}
                     />
                   </div>
                   
@@ -124,9 +150,10 @@ export default function Settings() {
                     <Input
                       id="email"
                       type="email"
-                      value={profile.email}
+                      value={settings.profile.email}
                       onChange={(e) => handleProfileChange('email', e.target.value)}
                       className="mt-1 border-gray-300 focus:border-[#4f75fd] focus:ring-[#4f75fd]"
+                      disabled={loading}
                     />
                   </div>
                   
@@ -134,9 +161,10 @@ export default function Settings() {
                     <Label htmlFor="phone" className="text-sm font-medium text-gray-700">Phone Number</Label>
                     <Input
                       id="phone"
-                      value={profile.phone}
+                      value={settings.profile.phone}
                       onChange={(e) => handleProfileChange('phone', e.target.value)}
                       className="mt-1 border-gray-300 focus:border-[#4f75fd] focus:ring-[#4f75fd]"
+                      disabled={loading}
                     />
                   </div>
                 </div>
@@ -188,9 +216,10 @@ export default function Settings() {
                   <Input
                     id="account-email"
                     type="email"
-                    value={account.email}
+                    value={settings.account.email}
                     onChange={(e) => handleAccountChange('email', e.target.value)}
                     className="mt-1 border-gray-300 focus:border-[#4f75fd] focus:ring-[#4f75fd]"
+                    disabled={loading}
                   />
                 </div>
                 
@@ -199,9 +228,10 @@ export default function Settings() {
                   <Input
                     id="password"
                     type="password"
-                    value={account.password}
+                    value={settings.account.password}
                     onChange={(e) => handleAccountChange('password', e.target.value)}
                     className="mt-1 border-gray-300 focus:border-[#4f75fd] focus:ring-[#4f75fd]"
+                    disabled={loading}
                   />
                 </div>
                 
@@ -230,8 +260,9 @@ export default function Settings() {
                     <p className="text-xs text-gray-500">Receive updates about your projects</p>
                   </div>
                   <Switch
-                    checked={preferences.notifications}
-                    onCheckedChange={(checked) => setPreferences(prev => ({ ...prev, notifications: checked }))}
+                    checked={settings.preferences.notifications}
+                    onCheckedChange={(checked) => handlePreferencesChange('notifications', checked)}
+                    disabled={loading}
                   />
                 </div>
                 
@@ -241,8 +272,9 @@ export default function Settings() {
                     <p className="text-xs text-gray-500">Sync data across devices</p>
                   </div>
                   <Switch
-                    checked={preferences.dataSync}
-                    onCheckedChange={(checked) => setPreferences(prev => ({ ...prev, dataSync: checked }))}
+                    checked={settings.preferences.dataSync}
+                    onCheckedChange={(checked) => handlePreferencesChange('dataSync', checked)}
+                    disabled={loading}
                   />
                 </div>
                 
@@ -270,12 +302,13 @@ export default function Settings() {
                 {/* Next of Kin */}
                 <div>
                   <Label htmlFor="nextOfKin" className="text-sm font-medium text-gray-700">Next of Kin</Label>
-                  <Input
-                    id="nextOfKin"
-                    value={personalInfo.nextOfKin}
-                    onChange={(e) => handlePersonalInfoChange('nextOfKin', e.target.value)}
-                    className="mt-1 border-gray-300 focus:border-[#4f75fd] focus:ring-[#4f75fd]"
-                  />
+                    <Input
+                      id="nextOfKin"
+                      value={settings.personalInfo.nextOfKin}
+                      onChange={(e) => handlePersonalInfoChange('nextOfKin', e.target.value)}
+                      className="mt-1 border-gray-300 focus:border-[#4f75fd] focus:ring-[#4f75fd]"
+                      disabled={loading}
+                    />
                 </div>
 
                 {/* City and Country Row */}
@@ -284,18 +317,20 @@ export default function Settings() {
                     <Label htmlFor="city" className="text-sm font-medium text-gray-700">City</Label>
                     <Input
                       id="city"
-                      value={personalInfo.city}
+                      value={settings.personalInfo.city}
                       onChange={(e) => handlePersonalInfoChange('city', e.target.value)}
                       className="mt-1 border-gray-300 focus:border-[#4f75fd] focus:ring-[#4f75fd]"
+                      disabled={loading}
                     />
                   </div>
                   <div>
                     <Label htmlFor="country" className="text-sm font-medium text-gray-700">Country</Label>
                     <Input
                       id="country"
-                      value={personalInfo.country}
+                      value={settings.personalInfo.country}
                       onChange={(e) => handlePersonalInfoChange('country', e.target.value)}
                       className="mt-1 border-gray-300 focus:border-[#4f75fd] focus:ring-[#4f75fd]"
+                      disabled={loading}
                     />
                   </div>
                 </div>
@@ -306,9 +341,10 @@ export default function Settings() {
                   <Input
                     id="expiryDate"
                     type="date"
-                    value={personalInfo.expiryDate}
+                    value={settings.personalInfo.expiryDate}
                     onChange={(e) => handlePersonalInfoChange('expiryDate', e.target.value)}
                     className="mt-1 border-gray-300 focus:border-[#4f75fd] focus:ring-[#4f75fd]"
+                    disabled={loading}
                   />
                 </div>
 
@@ -317,9 +353,10 @@ export default function Settings() {
                   <Label htmlFor="billingAddress" className="text-sm font-medium text-gray-700">Billing Address</Label>
                   <Input
                     id="billingAddress"
-                    value={personalInfo.billingAddress}
+                    value={settings.personalInfo.billingAddress}
                     onChange={(e) => handlePersonalInfoChange('billingAddress', e.target.value)}
                     className="mt-1 border-gray-300 focus:border-[#4f75fd] focus:ring-[#4f75fd]"
+                    disabled={loading}
                   />
                 </div>
 
@@ -329,18 +366,20 @@ export default function Settings() {
                     <Label htmlFor="billingCity" className="text-sm font-medium text-gray-700">City</Label>
                     <Input
                       id="billingCity"
-                      value={personalInfo.billingCity}
+                      value={settings.personalInfo.billingCity}
                       onChange={(e) => handlePersonalInfoChange('billingCity', e.target.value)}
                       className="mt-1 border-gray-300 focus:border-[#4f75fd] focus:ring-[#4f75fd]"
+                      disabled={loading}
                     />
                   </div>
                   <div>
                     <Label htmlFor="province" className="text-sm font-medium text-gray-700">Province</Label>
                     <Input
                       id="province"
-                      value={personalInfo.province}
+                      value={settings.personalInfo.province}
                       onChange={(e) => handlePersonalInfoChange('province', e.target.value)}
                       className="mt-1 border-gray-300 focus:border-[#4f75fd] focus:ring-[#4f75fd]"
+                      disabled={loading}
                     />
                   </div>
                 </div>
@@ -351,8 +390,19 @@ export default function Settings() {
 
         {/* Save Button */}
         <div className="mt-8 flex justify-end">
-          <Button className="bg-[#4f75fd] hover:bg-[#618af2] text-white px-8">
-            Save Changes
+          <Button 
+            onClick={handleSaveSettings}
+            disabled={loading || saving}
+            className="bg-[#4f75fd] hover:bg-[#618af2] text-white px-8"
+          >
+            {saving ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                Saving...
+              </>
+            ) : (
+              'Save Changes'
+            )}
           </Button>
         </div>
       </div>

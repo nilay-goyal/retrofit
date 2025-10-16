@@ -4,79 +4,15 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { ArrowLeft, Download, Edit, Mail, Phone, MapPin, Calendar, DollarSign, Upload, Camera, ChevronLeft, ChevronRight } from 'lucide-react';
-
-// Mock data - in a real app this would come from an API
-const allQuotes = [
-  {
-    id: "Q-001",
-    client: "John Smith",
-    email: "john.smith@email.com",
-    phone: "(555) 123-4567",
-    address: "123 Main St, Toronto, ON",
-    project: "Attic Insulation - R50",
-    description: "Complete attic insulation upgrade including air sealing and vapor barrier installation",
-    squareFootage: 1200,
-    amount: 4500,
-    status: "pending",
-    date: "2024-01-15",
-    expiryDate: "2024-02-15",
-    materials: [
-      { name: "Blown-in Cellulose Insulation", quantity: "25 bags", unitPrice: 45, total: 1125 },
-      { name: "Vapor Barrier", quantity: "1200 sq ft", unitPrice: 1.25, total: 1500 },
-      { name: "Air Sealing Materials", quantity: "1 set", unitPrice: 250, total: 250 }
-    ],
-    labor: {
-      description: "Professional installation and cleanup",
-      hours: 16,
-      rate: 85,
-      total: 1360
-    },
-    notes: "Customer requested eco-friendly materials. Property is a 1950s bungalow with existing R20 insulation to be topped up.",
-    images: [
-      "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=400&h=300&fit=crop",
-      "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=400&h=300&fit=crop",
-      "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=400&h=300&fit=crop"
-    ]
-  },
-  {
-    id: "Q-002", 
-    client: "Sarah Johnson",
-    email: "sarah.j@email.com",
-    phone: "(555) 987-6543",
-    address: "456 Oak Ave, Ottawa, ON",
-    project: "Basement Insulation",
-    description: "Full basement wall and rim joist insulation with moisture control",
-    squareFootage: 800,
-    amount: 6200,
-    status: "approved",
-    date: "2024-01-20",
-    expiryDate: "2024-02-20",
-    materials: [
-      { name: "Spray Foam Insulation", quantity: "800 sq ft", unitPrice: 4.50, total: 3600 },
-      { name: "Rim Joist Sealing", quantity: "200 linear ft", unitPrice: 8, total: 1600 },
-      { name: "Moisture Barrier", quantity: "800 sq ft", unitPrice: 1.25, total: 1000 }
-    ],
-    labor: {
-      description: "Professional spray foam application",
-      hours: 12,
-      rate: 85,
-      total: 1020
-    },
-    notes: "Basement shows some moisture issues. Recommended dehumidifier installation.",
-    images: [
-      "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=400&h=300&fit=crop",
-      "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=400&h=300&fit=crop"
-    ]
-  }
-];
+import { ArrowLeft, Download, Edit, Mail, Phone, MapPin, Calendar, DollarSign, Upload, Camera, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
+import { useQuoteDetails } from '@/hooks/useQuotes';
 
 const getStatusColor = (status: string) => {
   switch (status) {
-    case 'approved': return 'bg-green-100 text-green-800 border-green-200';
-    case 'pending': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-    case 'rejected': return 'bg-red-100 text-red-800 border-red-200';
-    case 'draft': return 'bg-gray-100 text-gray-800 border-gray-200';
+    case 'Approved': return 'bg-green-100 text-green-800 border-green-200';
+    case 'Pending': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+    case 'Rejected': return 'bg-red-100 text-red-800 border-red-200';
+    case 'Draft': return 'bg-gray-100 text-gray-800 border-gray-200';
     default: return 'bg-gray-100 text-gray-800 border-gray-200';
   }
 };
@@ -84,12 +20,28 @@ const getStatusColor = (status: string) => {
 const QuoteDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { quote, loading, error } = useQuoteDetails(id || '');
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   
-  const quote = allQuotes.find(q => q.id === id);
-  
-  if (!quote) {
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background p-6">
+        <div className="max-w-4xl mx-auto">
+          <div className="flex items-center justify-center min-h-[400px]">
+            <div className="text-center">
+              <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-[#4f75fd]" />
+              <p className="text-gray-600">Loading quote details...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (error || !quote) {
     return (
       <div className="min-h-screen bg-background p-6">
         <div className="max-w-4xl mx-auto">
@@ -100,7 +52,7 @@ const QuoteDetails = () => {
           <Card>
             <CardContent className="p-6 text-center">
               <h2 className="text-xl font-semibold mb-2">Quote Not Found</h2>
-              <p className="text-muted-foreground">The quote you're looking for doesn't exist.</p>
+              <p className="text-muted-foreground">{error || "The quote you're looking for doesn't exist."}</p>
             </CardContent>
           </Card>
         </div>
@@ -108,9 +60,9 @@ const QuoteDetails = () => {
     );
   }
 
-  const subtotal = quote.materials.reduce((sum, item) => sum + item.total, 0) + quote.labor.total;
+  const subtotal = quote.materialCost + quote.laborCost;
   const tax = subtotal * 0.13; // 13% HST
-  const total = subtotal + tax;
+  const total = subtotal + tax - quote.rebateAmount;
 
   const handleFileUpload = (files: FileList | null) => {
     if (files) {
@@ -177,10 +129,6 @@ const QuoteDetails = () => {
                     {quote.email}
                   </div>
                   <div className="flex items-center gap-2 text-muted-foreground">
-                    <Phone className="w-4 h-4" />
-                    {quote.phone}
-                  </div>
-                  <div className="flex items-center gap-2 text-muted-foreground">
                     <MapPin className="w-4 h-4" />
                     {quote.address}
                   </div>
@@ -193,15 +141,15 @@ const QuoteDetails = () => {
                 <div className="space-y-2">
                   <div className="flex items-center gap-2 text-muted-foreground">
                     <Calendar className="w-4 h-4" />
-                    Created: {new Date(quote.date).toLocaleDateString()}
-                  </div>
-                  <div className="flex items-center gap-2 text-muted-foreground">
-                    <Calendar className="w-4 h-4" />
-                    Expires: {new Date(quote.expiryDate).toLocaleDateString()}
+                    Created: {new Date(quote.createdAt).toLocaleDateString()}
                   </div>
                   <div className="flex items-center gap-2 text-muted-foreground">
                     <DollarSign className="w-4 h-4" />
                     Square Footage: {quote.squareFootage.toLocaleString()} sq ft
+                  </div>
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <DollarSign className="w-4 h-4" />
+                    Total Amount: ${quote.amount.toLocaleString()}
                   </div>
                 </div>
               </div>
@@ -310,7 +258,7 @@ const QuoteDetails = () => {
             <CardTitle>Project Description</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-muted-foreground">{quote.description}</p>
+            <p className="text-muted-foreground">{quote.project}</p>
             {quote.notes && (
               <>
                 <Separator className="my-4" />
@@ -323,7 +271,7 @@ const QuoteDetails = () => {
           </CardContent>
         </Card>
 
-        {/* Materials & Labor Breakdown */}
+        {/* Quote Breakdown */}
         <Card>
           <CardHeader>
             <CardTitle>Quote Breakdown</CardTitle>
@@ -333,17 +281,15 @@ const QuoteDetails = () => {
             <div className="mb-6">
               <h3 className="font-semibold mb-4">Materials</h3>
               <div className="space-y-3">
-                {quote.materials.map((material, index) => (
-                  <div key={index} className="flex justify-between items-center py-2 border-b border-border/50">
-                    <div className="flex-1">
-                      <div className="font-medium">{material.name}</div>
-                      <div className="text-sm text-muted-foreground">
-                        {material.quantity} × ${material.unitPrice}
-                      </div>
+                <div className="flex justify-between items-center py-2 border-b border-border/50">
+                  <div className="flex-1">
+                    <div className="font-medium">Insulation Materials</div>
+                    <div className="text-sm text-muted-foreground">
+                      {quote.squareFootage} sq ft × $2.50/sq ft
                     </div>
-                    <div className="font-medium">${material.total.toLocaleString()}</div>
                   </div>
-                ))}
+                  <div className="font-medium">${quote.materialCost.toLocaleString()}</div>
+                </div>
               </div>
             </div>
 
@@ -352,12 +298,12 @@ const QuoteDetails = () => {
               <h3 className="font-semibold mb-4">Labor</h3>
               <div className="flex justify-between items-center py-2 border-b border-border/50">
                 <div className="flex-1">
-                  <div className="font-medium">{quote.labor.description}</div>
+                  <div className="font-medium">Professional Installation</div>
                   <div className="text-sm text-muted-foreground">
-                    {quote.labor.hours} hours × ${quote.labor.rate}/hour
+                    {quote.squareFootage} sq ft × $1.80/sq ft
                   </div>
                 </div>
-                <div className="font-medium">${quote.labor.total.toLocaleString()}</div>
+                <div className="font-medium">${quote.laborCost.toLocaleString()}</div>
               </div>
             </div>
 
@@ -372,6 +318,12 @@ const QuoteDetails = () => {
                 <span>HST (13%)</span>
                 <span>${tax.toFixed(2)}</span>
               </div>
+              {quote.rebateAmount > 0 && (
+                <div className="flex justify-between text-green-600">
+                  <span>Rebate</span>
+                  <span>-${quote.rebateAmount.toFixed(2)}</span>
+                </div>
+              )}
               <Separator className="my-2" />
               <div className="flex justify-between text-lg font-bold">
                 <span>Total</span>

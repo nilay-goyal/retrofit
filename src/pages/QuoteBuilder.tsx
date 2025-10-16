@@ -14,8 +14,13 @@ import {
   MapPin,
   ArrowRight,
   ArrowLeft,
-  CheckCircle
+  CheckCircle,
+  Loader2
 } from "lucide-react";
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
+import { useToast } from '@/hooks/use-toast';
+import { useNavigate } from 'react-router-dom';
 
 const steps = [
   { id: 1, title: "Project Info", icon: FileText },
@@ -25,7 +30,11 @@ const steps = [
 ];
 
 export default function QuoteBuilder() {
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
+  const [saving, setSaving] = useState(false);
   const [formData, setFormData] = useState({
     // Step 1: Project Info
     clientName: "",
@@ -104,6 +113,63 @@ export default function QuoteBuilder() {
 
   const prevStep = () => {
     setCurrentStep(prev => Math.max(prev - 1, 1));
+  };
+
+  const saveQuote = async () => {
+    if (!user) {
+      toast({
+        title: "Error",
+        description: "You must be logged in to save quotes.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      setSaving(true);
+      
+      const { data, error } = await supabase
+        .from('quotes')
+        .insert({
+          user_id: user.id,
+          client_name: formData.clientName,
+          client_email: formData.clientEmail,
+          client_phone: formData.clientPhone,
+          address: formData.projectAddress,
+          project_name: formData.projectType || 'Insulation Project',
+          project_type: formData.projectType,
+          square_footage: parseFloat(formData.squareFootage) || 0,
+          material_cost: formData.materialCost,
+          labor_cost: formData.laborCost,
+          amount: formData.totalCost,
+          rebate_amount: formData.rebateAmount,
+          notes: formData.description,
+          status: 'Pending',
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      toast({
+        title: "Quote saved successfully!",
+        description: "Your quote has been saved and will appear on your dashboard.",
+      });
+
+      // Navigate to dashboard after successful save
+      navigate('/dashboard');
+    } catch (err) {
+      console.error('Error saving quote:', err);
+      toast({
+        title: "Error saving quote",
+        description: err instanceof Error ? err.message : "Failed to save quote. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setSaving(false);
+    }
   };
 
   const renderStepContent = () => {
@@ -497,9 +563,24 @@ export default function QuoteBuilder() {
                 </p>
               </div>
               
-              <Button variant="construction" size="xl" className="w-full sm:w-auto bg-[#4f75fd] hover:bg-[#618af2] text-white">
-                <FileText className="w-5 h-5" />
-                Generate PDF Quote
+              <Button 
+                onClick={saveQuote}
+                disabled={saving}
+                variant="construction" 
+                size="xl" 
+                className="w-full sm:w-auto bg-[#4f75fd] hover:bg-[#618af2] text-white"
+              >
+                {saving ? (
+                  <>
+                    <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                    Saving Quote...
+                  </>
+                ) : (
+                  <>
+                    <FileText className="w-5 h-5 mr-2" />
+                    Save Quote
+                  </>
+                )}
               </Button>
             </div>
           </div>

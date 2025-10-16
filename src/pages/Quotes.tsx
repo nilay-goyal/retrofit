@@ -12,28 +12,11 @@ import {
   Edit,
   Filter,
   Calendar,
-  DollarSign
+  DollarSign,
+  Loader2,
+  Target
 } from "lucide-react";
-
-// Mock data for demonstration
-const allQuotes = [
-  {
-    id: 1,
-    client: "Smith Residence",
-    email: "john.smith@email.com",
-    project: "Attic Insulation - 1,200 sq ft",
-    amount: 2850,
-    status: "Pending",
-    createdAt: "2024-03-15",
-    address: "123 Oak Street, Springfield",
-    images: [
-      "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=400&h=300&fit=crop",
-      "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=400&h=300&fit=crop",
-      "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=400&h=300&fit=crop",
-      "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=400&h=300&fit=crop"
-    ]
-  }
-];
+import { useQuotes } from '@/hooks/useQuotes';
 
 const getStatusColor = (status: string) => {
   switch (status) {
@@ -52,20 +35,72 @@ const getStatusColor = (status: string) => {
 
 export default function Quotes() {
   const navigate = useNavigate();
+  const { quotes, loading, error, getQuoteStats, filterQuotes } = useQuotes();
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
 
-  const filteredQuotes = allQuotes.filter(quote => {
-    const matchesSearch = quote.client.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         quote.project.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         quote.address.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = statusFilter === "All" || quote.status === statusFilter;
-    return matchesSearch && matchesStatus;
-  });
+  const filteredQuotes = filterQuotes(searchTerm, statusFilter);
+  const stats = getQuoteStats();
 
-  const totalValue = filteredQuotes.reduce((sum, quote) => sum + quote.amount, 0);
-  const approvedQuotes = filteredQuotes.filter(q => q.status === "Approved");
-  const approvedValue = approvedQuotes.reduce((sum, quote) => sum + quote.amount, 0);
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-subtle">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
+          <div className="flex items-center justify-center min-h-[400px]">
+            <div className="text-center">
+              <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-[#4f75fd]" />
+              <p className="text-gray-600">Loading quotes...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show empty state when no quotes exist
+  if (quotes.length === 0) {
+    return (
+      <div className="min-h-screen bg-gradient-subtle">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
+          {/* Header */}
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+            <div>
+              <h1 className="text-3xl font-bold text-foreground">All Quotes</h1>
+              <p className="text-muted-foreground">
+                Create your first quote to get started
+              </p>
+            </div>
+            <Button asChild variant="construction" size="lg">
+              <Link to="/quote-builder">
+                <Plus className="w-5 h-5" />
+                Create Your First Quote
+              </Link>
+            </Button>
+          </div>
+
+          {/* Empty State */}
+          <div className="text-center py-16">
+            <div className="max-w-md mx-auto">
+              <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <Target className="w-12 h-12 text-gray-400" />
+              </div>
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">No Quotes Yet</h2>
+              <p className="text-gray-600 mb-8">
+                Start by creating your first quote to track your projects and manage your business.
+              </p>
+              <Button asChild size="lg" className="bg-[#4f75fd] hover:bg-[#618af2] text-white">
+                <Link to="/quote-builder">
+                  <Plus className="w-5 h-5 mr-2" />
+                  Create Your First Quote
+                </Link>
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-subtle">
@@ -86,13 +121,22 @@ export default function Quotes() {
           </Button>
         </div>
 
+        {/* Error Display */}
+        {error && (
+          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+            <p className="text-red-800 text-sm">
+              <strong>Error:</strong> {error}
+            </p>
+          </div>
+        )}
+
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <Card className="p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground font-medium">Total Quotes</p>
-                <p className="text-2xl font-bold text-foreground">{filteredQuotes.length}</p>
+                <p className="text-2xl font-bold text-foreground">{stats.totalQuotes}</p>
               </div>
               <div className="p-3 rounded-xl bg-primary/10">
                 <Calendar className="w-6 h-6 text-primary" />
@@ -104,7 +148,7 @@ export default function Quotes() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground font-medium">Approved</p>
-                <p className="text-2xl font-bold text-success">{approvedQuotes.length}</p>
+                <p className="text-2xl font-bold text-success">{stats.approvedQuotes}</p>
               </div>
               <div className="p-3 rounded-xl bg-success/10">
                 <Calendar className="w-6 h-6 text-success" />
@@ -116,7 +160,7 @@ export default function Quotes() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground font-medium">Total Value</p>
-                <p className="text-2xl font-bold text-foreground">${totalValue.toLocaleString()}</p>
+                <p className="text-2xl font-bold text-foreground">${stats.totalValue.toLocaleString()}</p>
               </div>
               <div className="p-3 rounded-xl bg-construction/10">
                 <DollarSign className="w-6 h-6 text-construction" />
@@ -128,7 +172,7 @@ export default function Quotes() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground font-medium">Approved Value</p>
-                <p className="text-2xl font-bold text-success">${approvedValue.toLocaleString()}</p>
+                <p className="text-2xl font-bold text-success">${stats.approvedValue.toLocaleString()}</p>
               </div>
               <div className="p-3 rounded-xl bg-success/10">
                 <DollarSign className="w-6 h-6 text-success" />
@@ -208,7 +252,7 @@ export default function Quotes() {
                     <Button 
                       variant="outline" 
                       size="sm"
-                      onClick={() => navigate(`/quotes/Q-${quote.id.toString().padStart(3, '0')}`)}
+                      onClick={() => navigate(`/quotes/${quote.id}`)}
                     >
                       <Eye className="w-4 h-4" />
                       View
